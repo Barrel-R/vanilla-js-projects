@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+}
+
+h1 {
+    display: flex;
+    justify-content: center;
+    margin-top: 70px;
+}
+
+.container {
+    width: 60%;
+    margin-left: 20%;
+}
+
+.carousel {
+    border-radius: 9px;
+    border: 2px solid rgba(24, 23, 23, 0.616);
+    padding: 30px;
+}
+
+.arrows {
+    display: flex;
+    width: 20%;
+    margin-left: 40%;
+    margin-top: 40px;
+    justify-content: space-between;
+    font-size: 50px;
+    color: rgb(18, 138, 207);
+}
+
+.fa-solid {
+    cursor: pointer;
+}
+
+.pfp {
+    display: flex;
+    justify-content: center;
+    
+}
+
+.pfp img {
+    border-radius: 50%;
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+}
+
+.center {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.role {
+    color: rgb(211, 21, 21)
+}
+
+.description {
+    color: rgb(201, 64, 201);
+}
+
+.surprise-btn {
+    background-color: rgba(255, 0, 0, 0.438);
+    padding: 6px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.2s ease-in-out;
+    border: 2px solid white;
+}
+
+.surprise-btn:hover {
+    background-color: orange;
+    transition: 0.2s ease-in-out;
+    border: 2px solid black;
+}
+
+.underline {
+    border: 2px solid rgb(27, 153, 226);
+    width: 8%;
+    margin-left: 46%;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
