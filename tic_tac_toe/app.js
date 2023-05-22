@@ -3,27 +3,21 @@ class Game {
         this.board = board
         this.userShape = userShape
         this.otherShape = otherShape
-
-        this.clear()
     }
 
-    activeTurn = 'user1'
-    rows = [
+    game_state = 'off'
+    active_turn = 'user1'
+
+    board_matrix = [
         [1,2,3],
         [4,5,6,],
         [7,8,9]
     ]
-    columns = [
-        [1,4,7],
-        [2,5,8],
-        [3,6,9]
-    ]
-    diagonals = [
-        [1,5,9],
-        [3,5,7]
-    ]
 
-    wins = [this.rows, this.columns, this.diagonals]
+    columns = []
+    diagonal = []
+    counter_diagonal = []
+
     user1_results = []
     user2_results = []
     
@@ -41,11 +35,11 @@ class Game {
     }
 
     drawShape(square) {
-        if (this.activeTurn == 'user1') {
+        if (this.active_turn === 'user1') {
             square.innerHTML = this.userShape.innerHTML
         }
 
-        if (this.activeTurn == 'user2') {
+        if (this.active_turn === 'user2') {
             square.innerHTML = this.otherShape.innerHTML
         }
     }
@@ -65,54 +59,109 @@ class Game {
     }
 
     changeTurn() {
-        this.activeTurn == 'user1' ? this.activeTurn = 'user2' : this.activeTurn = 'user1'
+        this.active_turn === 'user1' ? this.active_turn = 'user2' : this.active_turn = 'user1'
     }
 
     markResult(id) {
-        if (this.activeTurn == 'user1') {
-            this.user1_results.push(id)
+        if (this.active_turn === 'user1') {
+            this.user1_results.push(parseInt(id))
+            console.log(this.user1_results)
         }
-        if (this.activeTurn == 'user2') {
-            this.user2_results.push(id)
+        if (this.active_turn === 'user2') {
+            this.user2_results.push(parseInt(id))
+            console.log(this.user2_results)
         }
-
-        this.sortResults()
-    }
-
-    sortResults() {
-        this.user1_results.sort()
-        this.user2_results.sort()
     }
 
     checkWinner() {
-        const results = this.activeTurn == 'user1' ? this.user1_results : this.user2_results
+        const result = this.active_turn === 'user1' ? this.user1_results : this.user2_results
 
-        for (let i = 0; i < this.wins.length; i++) {
-            for (let j = 0; j < this.wins[i].length; j++) {
-              const win = this.wins[i][j];
-              console.log(this.arrayContainsSubArray(this.user1_results, win))
-              if (this.arrayContainsSubArray(results, win)) {
-                console.log(`${results} wins!`);
-                return;
-              }
+        this.checkRows(result)
+        this.checkColumns(this.columns, result)
+        this.checkDiagonal(this.diagonal, result)
+        this.checkDiagonal(this.counter_diagonal, result)
+        this.checkForTie()
+    }
+
+    checkRows(result) {
+        for (let i = 0; i < this.board_matrix.length; i++) {
+            if (this.board_matrix[i].every(num => result.includes(num))) {
+                this.finishGame()
             }
-          }
-
-        // check for a tie
-        if (this.user1_results.length + this.user2_results.length === 9) {
-            console.log('It\'s a tie!');
-            return;
         }
     }
 
-    arrayContainsSubArray(arr, target) {
-        return target.every(v => arr.includes(v))
+    checkColumns(columns, result) {
+        columns.forEach(column => {
+            if (column.every(num => result.includes(num))) {
+                this.finishGame()
+            }
+        })
+    }
+    
+    checkDiagonal(diagonal, result) {
+        if (diagonal.every(num => result.includes(num))) {
+            this.finishGame()
+        }
     }
 
-    clear() {
-        this.activeTurn = 'user1'
+    checkForTie() {
+        const MAX_INPUT_NUMBER = 9
+        if (this.user1_results.length + this.user2_results.length === MAX_INPUT_NUMBER) {
+            this.finishGame(true)
+        }
+    }
+
+    getColumns() {
+        const columns = []
+
+        for (let i = 0; i < this.board_matrix[0].length; i++) {
+            const column = []
+            for (let j = 0; j < this.board_matrix.length; j++) {
+                column.push(this.board_matrix[j][i])
+            }
+            columns.push(column)
+        }
+        return columns
+    }
+
+    clearData() {
+        this.active_turn = 'user1'
         this.user1_results = []
         this.user2_results = []
+        
+        console.log('clearing')
+    }
+
+    finishGame(tie = null) {
+        if (tie !== null) {
+            console.log('It\'s a tie!')
+        } else {
+            console.log(`${this.active_turn} wins!`)
+        }
+        this.game_state = 'ended'
+        this.clearData()
+        return
+    }
+
+    proccessLoad() {
+        console.log('loading')
+        this.clearData()
+        this.game_state = 'loaded'
+    }
+
+    setBoardData() {
+        for (let i = 0; i < this.board_matrix.length; i++) {
+            for (let j = 0; j < this.board_matrix[i].length; j++) { 
+                if (i === j) {
+                    this.diagonal.push(this.board_matrix[i][j])
+                }
+                if (i + j === this.board_matrix.length - 1) {
+                    this.counter_diagonal.push(this.board_matrix[i][j])
+                }
+            }
+        }
+        this.columns = this.getColumns()
     }
 }
 
@@ -120,36 +169,42 @@ const board = document.getElementById('board')
 const X = document.getElementById('x')
 const CIRCLE = document.getElementById('circle')
 
-let gameLoaded = false;
+let game_loaded = false;
 
-X.addEventListener('click', () => {
-    if (gameLoaded == false) {
-        loadGame(X, CIRCLE)
-    } else {
-        this.clear()
+X.addEventListener('click', function setXGame() {
+    const game = gameInstance(X, CIRCLE)
+    if (game_loaded === false) {
+        startGame(game)
     }
+    game.proccessLoad()
+    window.clearSquares()
 })
 
-CIRCLE.addEventListener('click', () => {
-    if (gameLoaded == false) {
-        loadGame(CIRCLE, X)
-    } else {
-        this.clear()
+CIRCLE.addEventListener('click', function setCircle() {
+    const game = gameInstance(CIRCLE, X)
+    if (game_loaded === false) {
+        startGame(game)
     }
+    game.proccessLoad()
+    window.clearSquares()
 })
 
-function loadGame(userShape, otherShape) {
+var gameInstance = function(userShape, otherShape) {
     let game = new Game(board, userShape, otherShape)
 
-    gameLoaded = true;
-
-    game.createSquares()
-    game.handleSquareClick()
+    return game
 }
 
-function clear() {
+function clearSquares() {
     let squares = document.querySelectorAll('.square')
     squares.forEach(square => {
         square.innerHTML = ''
     })
+}
+
+function startGame(game_instance) {
+    game_loaded = true;
+    game_instance.createSquares()
+    game_instance.handleSquareClick()
+    game_instance.setBoardData()
 }
