@@ -23,15 +23,15 @@ class Game {
     
     createSquares() {
         for (let i = 0; i < 9; i++) {
-            let square = document.createElement("div")
-
-            square.classList.add('border')
-            square.classList.add('col-4')
-            square.classList.add('square')
-            square.id = 'square' + (i + 1)
-            
-            this.board.appendChild(square)
         }
+        const canvas = document.getElementById('board')
+        if (canvas.getContext) {
+            var ctx = canvas.getContext('2d')
+        }
+
+        const circle = new Path2D()
+        circle.arc(10, 35, 15, 0, 2 * Math.PI)
+        ctx.stroke(circle)
     }
 
     drawShape(square) {
@@ -192,6 +192,8 @@ CIRCLE.addEventListener('click', function setCircle() {
 var gameInstance = function(userShape, otherShape) {
     let game = new Game(board, userShape, otherShape)
 
+    fadeButtons()
+    dissmissTitle()
     return game
 }
 
@@ -207,4 +209,23 @@ function startGame(game_instance) {
     game_instance.createSquares()
     game_instance.handleSquareClick()
     game_instance.setBoardData()
+}
+
+function dissmissTitle() {
+    const title = document.querySelector("[data-title]")
+    title.classList.add('visually-hidden')
+}
+
+function fadeButtons() {
+    const buttons = [X, CIRCLE]
+    buttons.forEach(button => {
+        button.classList.add('fade-animation')
+        button.addEventListener('animationend', endAnimation)
+        
+        function endAnimation() {
+            button.classList.add('visually-hidden')
+            button.classList.remove('fade-animation')
+            button.removeEventListener('animationend', endAnimation)
+        }
+    })
 }

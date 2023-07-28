@@ -13,13 +13,14 @@
 <body>
     <div class="container pt-5">
         <h2 class="text-center">Tic Tac Toe</h2>
-        <div id="board" class="border col-8 offset-2 mt-3 rounded row">
-        </div>
+        <canvas id="board">
+        </canvas>
+        <h3 data-title class="col-12 text-center my-auto">Escolha X ou O!</h3>
         <div id="shape-choice" class="d-flex justify-content-evenly mt-5">
-            <button id="x" class="btn btn-primary w-25">
+            <button data-button id="x" class="btn btn-primary w-25">
                 <strong class="fs-1">X</strong>
             </button>
-            <button id="circle" class="btn btn-secondary w-25">
+            <button data-button id="circle" class="btn btn-danger w-25">
                 <strong class="fs-1">O</strong>
             </button>
         </div>
