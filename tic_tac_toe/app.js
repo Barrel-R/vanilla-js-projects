@@ -22,16 +22,39 @@ class Game {
     user2_results = []
     
     createSquares() {
-        for (let i = 0; i < 9; i++) {
-        }
-        const canvas = document.getElementById('board')
-        if (canvas.getContext) {
-            var ctx = canvas.getContext('2d')
-        }
+        const canvas = document.getElementById("board")
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
 
-        const circle = new Path2D()
-        circle.arc(10, 35, 15, 0, 2 * Math.PI)
-        ctx.stroke(circle)
+        // Calculate center position
+        const canvasCenterX = (viewportWidth - canvas.width) / 2;
+        const canvasCenterY = (viewportHeight - canvas.height) / 2;
+
+        // Center the canvas
+        canvas.style.position = "absolute";
+        canvas.style.left = canvasCenterX + "px"
+        canvas.style.top = canvasCenterY + "px"
+
+        const ctx = canvas.getContext('2d')
+
+        ctx.strokeStyle = "black"
+        ctx.lineWidth = 5
+
+        // Horizontal lines
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 3);
+        ctx.lineTo(canvas.width, canvas.height / 3);
+        ctx.moveTo(0, 2 * canvas.height / 3);
+        ctx.lineTo(canvas.width, 2 * canvas.height / 3);
+        ctx.stroke();
+        
+        // Vertical lines
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 3, 0);
+        ctx.lineTo(canvas.width / 3, canvas.height);
+        ctx.moveTo(2 * canvas.width / 3, 0);
+        ctx.lineTo(2 * canvas.width / 3, canvas.height);
+        ctx.stroke();
     }
 
     drawShape(square) {
@@ -44,17 +67,10 @@ class Game {
         }
     }
 
-    handleSquareClick() {
-        let squares = document.querySelectorAll('.square')
-        squares.forEach(square => {
-            square.addEventListener('click', () => {
-                if (square.innerHTML == '') {
-                    this.drawShape(square)  
-                    this.markResult(square.id.split('square')[1])
-                } 
-                this.checkWinner()
-                this.changeTurn()
-            })
+    handleBoardClick() {
+        let board = document.getElementById('board')
+        board.addEventListener("click", () => {
+            console.log("GET CLICKED FOOL")
         })
     }
 
@@ -207,7 +223,7 @@ function clearSquares() {
 function startGame(game_instance) {
     game_loaded = true;
     game_instance.createSquares()
-    game_instance.handleSquareClick()
+    game_instance.handleBoardClick()
     game_instance.setBoardData()
 }
 
