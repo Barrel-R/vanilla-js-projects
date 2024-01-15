@@ -21,7 +21,7 @@ class Game {
     user1_results = []
     user2_results = []
     
-    createSquares() {
+    drawCanvas() {
         const canvas = document.getElementById("board")
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
@@ -57,20 +57,10 @@ class Game {
         ctx.stroke();
     }
 
-    drawShape(square) {
-        if (this.active_turn === 'user1') {
-            square.innerHTML = this.userShape.innerHTML
-        }
-
-        if (this.active_turn === 'user2') {
-            square.innerHTML = this.otherShape.innerHTML
-        }
-    }
-
     handleBoardClick() {
         let board = document.getElementById('board')
-        board.addEventListener("click", () => {
-            console.log("GET CLICKED FOOL")
+        board.addEventListener("click", (event) => {
+            console.log(event.offsetX / board.width, event.offsetY / (board.height + 10))
         })
     }
 
@@ -193,7 +183,6 @@ X.addEventListener('click', function setXGame() {
         startGame(game)
     }
     game.proccessLoad()
-    window.clearSquares()
 })
 
 CIRCLE.addEventListener('click', function setCircle() {
@@ -202,7 +191,6 @@ CIRCLE.addEventListener('click', function setCircle() {
         startGame(game)
     }
     game.proccessLoad()
-    window.clearSquares()
 })
 
 var gameInstance = function(userShape, otherShape) {
@@ -213,16 +201,9 @@ var gameInstance = function(userShape, otherShape) {
     return game
 }
 
-function clearSquares() {
-    let squares = document.querySelectorAll('.square')
-    squares.forEach(square => {
-        square.innerHTML = ''
-    })
-}
-
 function startGame(game_instance) {
     game_loaded = true;
-    game_instance.createSquares()
+    game_instance.drawCanvas()
     game_instance.handleBoardClick()
     game_instance.setBoardData()
 }
