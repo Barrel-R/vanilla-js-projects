@@ -38,7 +38,7 @@ class Game {
         const ctx = canvas.getContext('2d')
 
         ctx.strokeStyle = "black"
-        ctx.lineWidth = 5
+        ctx.lineWidth = 10
 
         // Horizontal lines
         ctx.beginPath();
@@ -57,24 +57,68 @@ class Game {
         ctx.stroke();
     }
 
+    drawShape(horPos, vertPos, squares) {
+        const canvas = document.getElementById("board")
+        const ctx = canvas.getContext('2d')
+        
+        ctx.strokeStyle = "indigo"
+        ctx.lineWidth = 5
+
+        ctx.beginPath();
+        ctx.moveTo(horPos, vertPos);
+        ctx.arc(horPos + 30, vertPos + 30, 50, 0, Math.PI * 2)
+        ctx.stroke();
+    }
+
     handleBoardClick() {
         let board = document.getElementById('board')
-        board.addEventListener("click", (event) => {
-            console.log(event.offsetX / board.width, event.offsetY / (board.height + 10))
-        })
+        board.addEventListener("click", (event) => this.clickHandler(event))
+    }
+
+    clickHandler(event) {
+        const horPos = parseInt(event.offsetX / (board.width + 10) * 100)
+        const vertPos = parseInt(event.offsetY / (board.height + 10) * 100)
+        const squares = this.getSquares(horPos, vertPos)
+        const square = this.calculateSquare(squares.horSquare, squares.verSquare)
+
+        if (!isNaN(square)) {
+            this.drawShape(horPos, vertPos, squares)
+            this.markResult(square)
+        }
+    }
+
+    getSquares(horPos, vertPos) {
+        let horSquare = this.setSquare(horPos)
+        let verSquare = this.setSquare(vertPos)
+
+        return { horSquare, verSquare }
+    }
+
+    setSquare(pos) {
+        let square = undefined
+
+        if (pos < 31) square = 1
+        if (pos > 33 && pos < 64) square = 2
+        if (pos > 65) square = 3
+
+        return square
+    }
+
+    calculateSquare(x, y) {
+        return (y - 1) * 3 + x 
     }
 
     changeTurn() {
         this.activeTurn === 'user1' ? this.activeTurn = 'user2' : this.activeTurn = 'user1'
     }
 
-    markResult(id) {
+    markResult(num) {
         if (this.activeTurn === 'user1') {
-            this.firstUserResults.push(parseInt(id))
+            this.firstUserResults.push(parseInt(num))
             console.log(this.firstUserResults)
         }
         if (this.activeTurn === 'user2') {
-            this.secondUserResults.push(parseInt(id))
+            this.secondUserResults.push(parseInt(num))
             console.log(this.secondUserResults)
         }
     }
