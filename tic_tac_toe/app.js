@@ -5,10 +5,10 @@ class Game {
         this.otherShape = otherShape
     }
 
-    game_state = 'off'
-    active_turn = 'user1'
+    gameState = 'off'
+    activeTurn = 'user1'
 
-    board_matrix = [
+    boardMatrix = [
         [1,2,3],
         [4,5,6,],
         [7,8,9]
@@ -16,10 +16,10 @@ class Game {
 
     columns = []
     diagonal = []
-    counter_diagonal = []
+    counterDiag = []
 
-    user1_results = []
-    user2_results = []
+    firstUserResults = []
+    secondUserResults = []
     
     drawCanvas() {
         const canvas = document.getElementById("board")
@@ -65,33 +65,33 @@ class Game {
     }
 
     changeTurn() {
-        this.active_turn === 'user1' ? this.active_turn = 'user2' : this.active_turn = 'user1'
+        this.activeTurn === 'user1' ? this.activeTurn = 'user2' : this.activeTurn = 'user1'
     }
 
     markResult(id) {
-        if (this.active_turn === 'user1') {
-            this.user1_results.push(parseInt(id))
-            console.log(this.user1_results)
+        if (this.activeTurn === 'user1') {
+            this.firstUserResults.push(parseInt(id))
+            console.log(this.firstUserResults)
         }
-        if (this.active_turn === 'user2') {
-            this.user2_results.push(parseInt(id))
-            console.log(this.user2_results)
+        if (this.activeTurn === 'user2') {
+            this.secondUserResults.push(parseInt(id))
+            console.log(this.secondUserResults)
         }
     }
 
     checkWinner() {
-        const result = this.active_turn === 'user1' ? this.user1_results : this.user2_results
+        const result = this.activeTurn === 'user1' ? this.firstUserResults : this.secondUserResults
 
         this.checkRows(result)
         this.checkColumns(this.columns, result)
         this.checkDiagonal(this.diagonal, result)
-        this.checkDiagonal(this.counter_diagonal, result)
+        this.checkDiagonal(this.counterDiag, result)
         this.checkForTie()
     }
 
     checkRows(result) {
-        for (let i = 0; i < this.board_matrix.length; i++) {
-            if (this.board_matrix[i].every(num => result.includes(num))) {
+        for (let i = 0; i < this.boardMatrix.length; i++) {
+            if (this.boardMatrix[i].every(num => result.includes(num))) {
                 this.finishGame()
             }
         }
@@ -113,7 +113,7 @@ class Game {
 
     checkForTie() {
         const MAX_INPUT_NUMBER = 9
-        if (this.user1_results.length + this.user2_results.length === MAX_INPUT_NUMBER) {
+        if (this.firstUserResults.length + this.secondUserResults.length === MAX_INPUT_NUMBER) {
             this.finishGame(true)
         }
     }
@@ -121,10 +121,10 @@ class Game {
     getColumns() {
         const columns = []
 
-        for (let i = 0; i < this.board_matrix[0].length; i++) {
+        for (let i = 0; i < this.boardMatrix[0].length; i++) {
             const column = []
-            for (let j = 0; j < this.board_matrix.length; j++) {
-                column.push(this.board_matrix[j][i])
+            for (let j = 0; j < this.boardMatrix.length; j++) {
+                column.push(this.boardMatrix[j][i])
             }
             columns.push(column)
         }
@@ -132,9 +132,9 @@ class Game {
     }
 
     clearData() {
-        this.active_turn = 'user1'
-        this.user1_results = []
-        this.user2_results = []
+        this.activeTurn = 'user1'
+        this.firstUserResults = []
+        this.secondUserResults = []
         
         console.log('clearing')
     }
@@ -143,9 +143,9 @@ class Game {
         if (tie !== null) {
             console.log('It\'s a tie!')
         } else {
-            console.log(`${this.active_turn} wins!`)
+            console.log(`${this.activeTurn} wins!`)
         }
-        this.game_state = 'ended'
+        this.gameState = 'ended'
         this.clearData()
         return
     }
@@ -153,17 +153,17 @@ class Game {
     proccessLoad() {
         console.log('loading')
         this.clearData()
-        this.game_state = 'loaded'
+        this.gameState = 'loaded'
     }
 
     setBoardData() {
-        for (let i = 0; i < this.board_matrix.length; i++) {
-            for (let j = 0; j < this.board_matrix[i].length; j++) { 
+        for (let i = 0; i < this.boardMatrix.length; i++) {
+            for (let j = 0; j < this.boardMatrix[i].length; j++) { 
                 if (i === j) {
-                    this.diagonal.push(this.board_matrix[i][j])
+                    this.diagonal.push(this.boardMatrix[i][j])
                 }
-                if (i + j === this.board_matrix.length - 1) {
-                    this.counter_diagonal.push(this.board_matrix[i][j])
+                if (i + j === this.boardMatrix.length - 1) {
+                    this.counterDiag.push(this.boardMatrix[i][j])
                 }
             }
         }
