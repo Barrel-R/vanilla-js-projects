@@ -14,12 +14,24 @@ class Game {
         [7,8,9]
     ]
 
+    boardDrawPositions = {
+        1: [20, 20],
+        2: [137, 20],
+        3: [254, 20],
+        4: [20, 137],
+        5: [137, 137],
+        6: [254, 137],
+        7: [20, 254],
+        8: [137, 254],
+        9: [254, 254]
+    }
+
     columns = []
     diagonal = []
     counterDiag = []
 
-    firstUserResults = []
-    secondUserResults = []
+    firstUserResults = new Set()
+    secondUserResults = new Set()
     
     drawCanvas() {
         const canvas = document.getElementById("board")
@@ -64,9 +76,9 @@ class Game {
         ctx.strokeStyle = "indigo"
         ctx.lineWidth = 5
 
-        ctx.beginPath();
         ctx.moveTo(horPos, vertPos);
-        ctx.arc(horPos + 30, vertPos + 30, 50, 0, Math.PI * 2)
+        ctx.beginPath();
+        ctx.arc(horPos + 37, vertPos + 37, 40, 0, Math.PI * 2)
         ctx.stroke();
     }
 
@@ -81,8 +93,15 @@ class Game {
         const squares = this.getSquares(horPos, vertPos)
         const square = this.calculateSquare(squares.horSquare, squares.verSquare)
 
+        const squareXPos = this.boardDrawPositions[square][0]
+        const squareYPos = this.boardDrawPositions[square][1]
+        console.log(squareXPos, squareYPos)
+
+        if (this.getActiveTurnResults().has(square)) return
+
         if (!isNaN(square)) {
-            this.drawShape(horPos, vertPos, squares)
+            //  this.drawShape(horPos, vertPos, squares)
+            this.drawShape(squareXPos, squareYPos, squares)
             this.markResult(square)
         }
     }
@@ -108,19 +127,17 @@ class Game {
         return (y - 1) * 3 + x 
     }
 
+    getActiveTurnResults() {
+        return this.activeTurn === 'user' ? this.firstUserResults : this.secondUserResults
+    }
+
+
     changeTurn() {
         this.activeTurn === 'user1' ? this.activeTurn = 'user2' : this.activeTurn = 'user1'
     }
 
     markResult(num) {
-        if (this.activeTurn === 'user1') {
-            this.firstUserResults.push(parseInt(num))
-            console.log(this.firstUserResults)
-        }
-        if (this.activeTurn === 'user2') {
-            this.secondUserResults.push(parseInt(num))
-            console.log(this.secondUserResults)
-        }
+        this.getActiveTurnResults().add(num)
     }
 
     checkWinner() {
@@ -157,7 +174,7 @@ class Game {
 
     checkForTie() {
         const MAX_INPUT_NUMBER = 9
-        if (this.firstUserResults.length + this.secondUserResults.length === MAX_INPUT_NUMBER) {
+        if (this.firstUserResults.size + this.secondUserResults.size === MAX_INPUT_NUMBER) {
             this.finishGame(true)
         }
     }
@@ -177,8 +194,8 @@ class Game {
 
     clearData() {
         this.activeTurn = 'user1'
-        this.firstUserResults = []
-        this.secondUserResults = []
+        this.firstUserResults = new Set()
+        this.secondUserResults = new Set()
         
         console.log('clearing')
     }
