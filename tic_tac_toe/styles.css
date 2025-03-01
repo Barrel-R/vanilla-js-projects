@@ -9,11 +9,49 @@
     height: 350px;
 }
 
+.container {
+    padding-top: 2rem;
+}
+
+.title {
+    text-align: center;
+}
+
+.btn-title {
+    text-align: center;
+}
+
+.shape-choice {
+    display: flex;
+    justify-content: center;
+}
+
+[data-button] {
+    width: 100px;
+}
+
+#xBtn {
+    background-color: red;
+}
+
+#circleBtn {
+    background-color: blue;
+}
+
 .fade-animation {
     animation: fade-out 1s ease-in-out;
 }
 
+.hidden {
+    opacity: 0;
+}
+
 @keyframes fade-out {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }

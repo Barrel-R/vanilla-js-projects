@@ -9,9 +9,9 @@ class Game {
     activeTurn = 'user1'
 
     boardMatrix = [
-        [1,2,3],
-        [4,5,6,],
-        [7,8,9]
+        [1, 2, 3],
+        [4, 5, 6,],
+        [7, 8, 9]
     ]
 
     boardDrawPositions = {
@@ -32,7 +32,7 @@ class Game {
 
     firstUserResults = new Set()
     secondUserResults = new Set()
-    
+
     drawCanvas() {
         const canvas = document.getElementById("board")
         const viewportWidth = window.innerWidth;
@@ -59,7 +59,7 @@ class Game {
         ctx.moveTo(0, 2 * canvas.height / 3);
         ctx.lineTo(canvas.width, 2 * canvas.height / 3);
         ctx.stroke();
-        
+
         // Vertical lines
         ctx.beginPath();
         ctx.moveTo(canvas.width / 3, 0);
@@ -72,7 +72,7 @@ class Game {
     drawShape(horPos, vertPos, squares) {
         const canvas = document.getElementById("board")
         const ctx = canvas.getContext('2d')
-        
+
         ctx.strokeStyle = "indigo"
         ctx.lineWidth = 5
 
@@ -124,7 +124,7 @@ class Game {
     }
 
     calculateSquare(x, y) {
-        return (y - 1) * 3 + x 
+        return (y - 1) * 3 + x
     }
 
     getActiveTurnResults() {
@@ -165,7 +165,7 @@ class Game {
             }
         })
     }
-    
+
     checkDiagonal(diagonal, result) {
         if (diagonal.every(num => result.includes(num))) {
             this.finishGame()
@@ -196,7 +196,7 @@ class Game {
         this.activeTurn = 'user1'
         this.firstUserResults = new Set()
         this.secondUserResults = new Set()
-        
+
         console.log('clearing')
     }
 
@@ -219,7 +219,7 @@ class Game {
 
     setBoardData() {
         for (let i = 0; i < this.boardMatrix.length; i++) {
-            for (let j = 0; j < this.boardMatrix[i].length; j++) { 
+            for (let j = 0; j < this.boardMatrix[i].length; j++) {
                 if (i === j) {
                     this.diagonal.push(this.boardMatrix[i][j])
                 }
@@ -233,14 +233,14 @@ class Game {
 }
 
 const board = document.getElementById('board')
-const X = document.getElementById('x')
-const CIRCLE = document.getElementById('circle')
+const X = document.getElementById('xBtn')
+const CIRCLE = document.getElementById('circleBtn')
 
 let game_loaded = false;
 
 X.addEventListener('click', function setXGame() {
     const game = gameInstance(X, CIRCLE)
-    if (game_loaded === false) {
+    if (!game_loaded) {
         startGame(game)
     }
     game.proccessLoad()
@@ -248,7 +248,7 @@ X.addEventListener('click', function setXGame() {
 
 CIRCLE.addEventListener('click', function setCircle() {
     const game = gameInstance(CIRCLE, X)
-    if (game_loaded === false) {
+    if (!game_loaded) {
         startGame(game)
     }
     game.proccessLoad()
@@ -279,7 +279,7 @@ function fadeButtons() {
     buttons.forEach(button => {
         button.classList.add('fade-animation')
         button.addEventListener('animationend', endAnimation)
-        
+
         function endAnimation() {
             button.classList.add('visually-hidden')
             button.classList.remove('fade-animation')
