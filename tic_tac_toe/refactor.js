@@ -1,8 +1,13 @@
 class Game {
     constructor(board, mainShapeStr) {
         this.board = board
-        setupPlayers(mainShapeStr)
+        this.setupPlayers(mainShapeStr)
     }
+
+    DRAWING_PADDING = 30
+    MAX_INPUT = 9
+    gameMessage = ""
+    squareSide = board.width / 3
 
     players = [
         {
@@ -30,37 +35,38 @@ class Game {
         [3, 5, 7],
     ]
 
-    gameState = "off"
-
     setupPlayers(firstShape) {
         if (firstShape === "x") {
-            players[0].shape = "x"
-            players[1].shape = "circle"
+            this.players[0].shape = "x"
+            this.players[1].shape = "circle"
         } else {
-            players[0].shape = "circle"
-            players[1].shape = "x"
+            this.players[0].shape = "circle"
+            this.players[1].shape = "x"
         }
     }
 
     getCurrentPlayer() {
-        return players.filter(player => player.activeTurn)
+        return this.players.filter(player => player.activeTurn)[0]
     }
 
     getNextPlayer(current) {
-        if (current.shape = "x") return "circle"
-        if (current.shape = "circle") return "x"
+        return this.players.filter(player => player.id !== current.id)[0]
+    }
+
+    getCurrentPlayerResults() {
+        return this.getCurrentPlayer().results
     }
 
     findPlayer(id) {
-        return players.find(player => player.id === id)
+        return this.players.find(player => player.id === id)
     }
 
-    nextTurn() {
+    changeTurn() {
         const cur = this.getCurrentPlayer()
-        const next = this.getNextPlayer(cur.id)
+        const next = this.getNextPlayer(cur)
 
-        this.findPlayer(cur.id).activeTurn = false
-        this.findPlayer(next.id).activeTurn = true
+        this.players.find(player => player.id == cur.id).activeTurn = false
+        this.players.find(player => player.id == next.id).activeTurn = true
     }
 
     drawBoard() {
@@ -89,42 +95,105 @@ class Game {
         ctx.beginPath()
         ctx.moveTo(this.board.width / 3, 0)
         ctx.lineTo(this.board.width / 3, this.board.height)
-        ctx.moveTo(2 * this.board.wwidth / 3, 0)
+        ctx.moveTo(2 * this.board.width / 3, 0)
         ctx.lineTo(2 * this.board.width / 3, this.board.height)
         ctx.stroke()
     }
 
     drawShape(horPos, vertPos) {
-        ctx = this.board.getContext("2d")
+        const currentPlayer = this.getCurrentPlayer()
+
+        const ctx = this.board.getContext("2d")
 
         ctx.strokeStyle = "indigo"
         ctx.lineWidth = 5
 
-        ctx.moveTo(horPos, vertPos)
-        ctx.beginPath()
-        ctx.arc(horPos, vertPos, this.board.width / 3, 0, Math.PI * 2)
+        if (currentPlayer.shape === "circle") {
+            ctx.moveTo(horPos, vertPos)
+            ctx.beginPath()
+            ctx.arc(horPos + this.DRAWING_PADDING, vertPos + this.DRAWING_PADDING, 40, 0, Math.PI * 2)
+        } else {
+            ctx.beginPath()
+            ctx.moveTo(horPos - this.DRAWING_PADDING, vertPos - this.DRAWING_PADDING)
+            ctx.lineTo(horPos + this.DRAWING_PADDING, vertPos + this.DRAWING_PADDING)
+            ctx.moveTo(horPos + this.DRAWING_PADDING, vertPos - this.DRAWING_PADDING)
+            ctx.lineTo(horPos - this.DRAWING_PADDING, vertPos + this.DRAWING_PADDING)
+        }
+
         ctx.stroke()
     }
 
-    startRandomTurn() {
-        const randomFloat = Math.random()
-
-        if (randomFloat <= 0.5) {
-            players[0].activeTurn = true
-            players[1].activeTurn = false
-        } else {
-            players[0].activeTurn = false
-            players[1].activeTurn = true
-        }
+    startTurn() {
+        this.players[0].activeTurn = true
     }
 
     clearData() {
-        startRandomTurn()
-        players.forEach(player => player.results = new Set())
+        this.startTurn()
+        this.players.forEach(player => player.results = new Set())
+    }
+
+    calculateSquare(x, y) {
+        return (y - 1) * 3 + x
+    }
+
+    markResult(num) {
+        const id = this.getCurrentPlayer().id
+
+        this.findPlayer(id).results.add(num)
+    }
+
+    checkWinner() {
+        const cur = this.getCurrentPlayer()
+
+        const res = this.wins.filter(win => {
+            return win.every(num => cur.results.has(num))
+        })
+
+        return res.length > 0
+    }
+
+    finishGame() {
+        this.clearData()
+        console.log(this.gameMessage)
     }
 
     handleBoardClick() {
         this.board.addEventListener("click", (event) => {
+            const xSquare = Math.floor(event.offsetX / this.squareSide)
+            const ySquare = Math.floor(event.offsetY / this.squareSide)
+            const drawingPositions = {
+                "circle": [
+                    this.squareSide * xSquare + this.DRAWING_PADDING,
+                    this.squareSide * ySquare + this.DRAWING_PADDING
+                ],
+                "x": [
+                    this.squareSide * xSquare + this.squareSide / 2,
+                    this.squareSide * ySquare + this.squareSide / 2,
+                ]
+            }
+
+            const square = this.calculateSquare(xSquare + 1, ySquare + 1)
+            const currentPlayer = this.getCurrentPlayer()
+            const nextPlayer = this.getNextPlayer(currentPlayer)
+
+            if (currentPlayer.results.has(square) || nextPlayer.results.has(square)) return
+
+            const positions = drawingPositions[currentPlayer.shape]
+
+            this.drawShape(...positions)
+            this.markResult(Math.abs(square))
+
+            if (this.checkWinner()) {
+                this.gameMessage = currentPlayer.id + " wins!"
+                this.finishGame()
+                return
+            }
+
+            this.changeTurn()
+
+            if (nextPlayer.results.size + currentPlayer.results.size == 9) {
+                if (!this.checkWinner()) this.gameMessage = "It's a tie!"
+            }
         })
     }
 
@@ -142,7 +211,8 @@ function startGame(shapeStr) {
     fadeButtons()
     dismissTitle()
 
-    game.drawCanvas()
+    game.startTurn()
+    game.drawBoard()
     game.handleBoardClick()
     game.clearData()
 

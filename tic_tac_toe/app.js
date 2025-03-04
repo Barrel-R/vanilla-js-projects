@@ -88,6 +88,8 @@ class Game {
     }
 
     clickHandler(event) {
+        const squareSide = board.width / 3
+        console.log(Math.floor((event.offsetX / squareSide)))
         const horPos = parseInt(event.offsetX / (board.width + 10) * 100)
         const vertPos = parseInt(event.offsetY / (board.height + 10) * 100)
         const squares = this.getSquares(horPos, vertPos)
@@ -95,7 +97,6 @@ class Game {
 
         const squareXPos = this.boardDrawPositions[square][0]
         const squareYPos = this.boardDrawPositions[square][1]
-        console.log(squareXPos, squareYPos)
 
         if (this.getActiveTurnResults().has(square)) return
 

@@ -21,9 +21,10 @@
     text-align: center;
 }
 
-.shape-choice {
+.btn-container {
     display: flex;
     justify-content: center;
+    gap: 20px;
 }
 
 [data-button] {
